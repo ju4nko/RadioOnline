@@ -15,5 +15,7 @@ struct RadioOnlineApp: App {
             ContentView()
                 .modelContainer(for: Station.self)
         }
+        .defaultSize(width: 360, height: 480)
+        .windowResizability(.contentSize)
     }
 }

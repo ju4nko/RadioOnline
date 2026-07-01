@@ -27,6 +27,7 @@ struct CatalogView: View {
             }
             .navigationTitle("Añadir emisora")
         }
+        .frame(minWidth: 320, minHeight: 400)
     }
 }
 

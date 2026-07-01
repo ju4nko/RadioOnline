@@ -53,16 +53,17 @@ struct ContentView: View {
                     .padding()
                 }
             }
+            .frame(minWidth: 500, minHeight: 400)
             .navigationTitle("Radio Online")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button {
                         mostrandoCatalogo = true
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button {
                         player.stop()
                     } label: {
@@ -73,16 +74,6 @@ struct ContentView: View {
             .sheet(isPresented: $mostrandoCatalogo) {
                 CatalogView(player: player)
             }
-        }
-    }
-
-    private func deleteStations(at offsets: IndexSet) {
-        for index in offsets {
-            let station = stations[index]
-            if station === player.currentStation {
-                player.stop()
-            }
-            context.delete(station)
         }
     }
 }

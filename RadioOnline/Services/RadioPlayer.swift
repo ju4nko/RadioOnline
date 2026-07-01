@@ -51,6 +51,7 @@ class RadioPlayer {
     }
     
     private func configureAudioSession() {
+        #if os(iOS)
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback)
@@ -58,6 +59,6 @@ class RadioPlayer {
         } catch {
             print(error)
         }
-        
+        #endif
     }
 }
