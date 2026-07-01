@@ -13,6 +13,8 @@ class RadioPlayer {
     private var player: AVPlayer?
     var isPlaying: Bool = false
     var currentStation: Station?
+    var isLoading: Bool = false
+    private var statusObservation: NSKeyValueObservation?
     
     
     func play(station: Station) {
@@ -20,6 +22,13 @@ class RadioPlayer {
         guard let url = URL(string: station.url) else { return }
         configureAudioSession()
         player = AVPlayer(url: url)
+        statusObservation = player?.observe(\.timeControlStatus) { [weak self] player, _ in
+            guard let self else { return }
+            let isLoading = (player.timeControlStatus == .waitingToPlayAtSpecifiedRate)
+            Task { @MainActor in
+                self.isLoading = isLoading
+            }
+        }
         player?.play()
         isPlaying = true
     }

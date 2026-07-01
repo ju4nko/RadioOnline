@@ -17,20 +17,31 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing: 0) {
                 if let station = player.currentStation {
-                    if let urlString = station.imageURL, let url = URL(string: urlString) {
-                        AsyncImage(url: url) { image in
-                            image.resizable().scaledToFit()
-                        } placeholder: {
-                            ProgressView()   // spinner mientras carga
+                    VStack {
+                        if let urlString = station.imageURL, let url = URL(string: urlString) {
+                            AsyncImage(url: url) { image in
+                                image.resizable().scaledToFit()
+                            } placeholder: {
+                                ProgressView()   // spinner mientras carga
+                            }
+                            .frame(width: 120, height: 120)
                         }
-                        .frame(width: 120, height: 120)
                         Text(station.nombre)
                             .font(.headline)
-                        Image(systemName: "waveform")
-                            .font(.largeTitle)
-                            .symbolEffect(.variableColor.iterative, isActive: player.isPlaying)
+                        if player.isLoading {
+                            HStack(spacing: 6) {
+                                ProgressView()
+                                Text("Cargando…")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } else {
+                            Image(systemName: "waveform")
+                                .font(.largeTitle)
+                                .symbolEffect(.variableColor.iterative, isActive: player.isPlaying)
+                        }
                         Button {
                             player.togglePlayPause()
                         } label: {
@@ -39,9 +50,10 @@ struct ContentView: View {
                                 .frame(width: 60, height: 60)
                         }
                     }
+                    .padding()
                 }
             }
-            .navigationTitle("Emisora")
+            .navigationTitle("Radio Online")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -63,7 +75,18 @@ struct ContentView: View {
             }
         }
     }
+
+    private func deleteStations(at offsets: IndexSet) {
+        for index in offsets {
+            let station = stations[index]
+            if station === player.currentStation {
+                player.stop()
+            }
+            context.delete(station)
+        }
+    }
 }
+
 
 #Preview {
     ContentView().modelContainer(for: Station.self, inMemory: true)
