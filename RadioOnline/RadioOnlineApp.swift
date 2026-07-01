@@ -12,7 +12,7 @@ import SwiftData
 struct RadioOnlineApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
                 .modelContainer(for: Station.self)
         }
         .defaultSize(width: 360, height: 480)

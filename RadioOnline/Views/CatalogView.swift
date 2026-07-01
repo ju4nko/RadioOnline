@@ -5,14 +5,15 @@
 //  Created by Juanjo on 01/07/2026.
 //
 
+
 import SwiftUI
 import SwiftData
 
 struct CatalogView: View {
     @Environment(\.modelContext) private var context
     let player: RadioPlayer
-    @Environment(\.dismiss) private var dismiss
-    
+    @Binding var seleccion: Seccion
+
     var body: some View {
         NavigationStack {
             List(RadioCatalogItem.all) { item in
@@ -20,17 +21,17 @@ struct CatalogView: View {
                     let nueva = Station(nombre: item.nombre, url: item.url, imageURL: item.imageURL)
                     context.insert(nueva)
                     player.play(station: nueva)
-                    dismiss()
+                    seleccion = .reproductor          // salta a la pestaña del reproductor
                 } label: {
                     Text(item.nombre)
                 }
             }
-            .navigationTitle("Añadir emisora")
+            .navigationTitle("Emisoras")
         }
-        .frame(minWidth: 320, minHeight: 400)
     }
 }
 
 #Preview {
-    CatalogView(player: RadioPlayer())
+    CatalogView(player: RadioPlayer(), seleccion: .constant(.emisoras))
+        .modelContainer(for: Station.self, inMemory: true)
 }
