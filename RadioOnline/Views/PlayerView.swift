@@ -25,6 +25,15 @@ struct PlayerView: View {
                         }
                         Text(station.nombre)
                             .font(.headline)
+
+                        if let programa = player.nowPlaying {
+                            Text(programa)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                                .transition(.opacity)
+                        }
                         if player.isLoading {
                             HStack(spacing: 6) {
                                 ProgressView()
@@ -48,6 +57,7 @@ struct PlayerView: View {
                     .padding()
                 }
             }
+            .animation(.default, value: player.nowPlaying)
             .frame(minWidth: 320, minHeight: 400)
             .navigationTitle("Radio Online")
         }

@@ -15,13 +15,25 @@ class RadioPlayer {
     var currentStation: Station?
     var isLoading: Bool = false
     private var statusObservation: NSKeyValueObservation?
+    var nowPlaying: String?
+    private var metadataDelegate: MetadataDelegate?
     
     
     func play(station: Station) {
         currentStation = station
+        nowPlaying = nil
         guard let url = URL(string: station.url) else { return }
         configureAudioSession()
-        player = AVPlayer(url: url)
+        let item = AVPlayerItem(url: url)
+        let delegate = MetadataDelegate { [weak self] titulo in
+            Task { @MainActor in self?.nowPlaying = titulo }
+        }
+        metadataDelegate = delegate
+        let output = AVPlayerItemMetadataOutput()   // ← nuevo
+        output.setDelegate(delegate, queue: .main)  // ← nuevo
+        item.add(output)
+        player = AVPlayer(playerItem: item)
+        //player = AVPlayer(url: url)
         statusObservation = player?.observe(\.timeControlStatus) { [weak self] player, _ in
             guard let self else { return }
             let isLoading = (player.timeControlStatus == .waitingToPlayAtSpecifiedRate)
@@ -38,6 +50,7 @@ class RadioPlayer {
         player = nil
         currentStation = nil
         isPlaying = false
+        nowPlaying = nil
     }
     
     func togglePlayPause() {
